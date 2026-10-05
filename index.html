@@ -11,15 +11,25 @@
   <div id="app">
     <h1>Lesson Shop</h1>
 
-    <h2>{{ lesson.subject }}</h2>
-    <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
-    <p>Location: {{ lesson.location }}</p>
-    <p>Price: £{{ lesson.price }}</p>
-    <p>Spaces: {{ lesson.availability }}</p>
-
-    <button v-on:click="addToCart" v-bind:disabled="!canAddToCart">
-      Add to cart
+    <button v-on:click="toggleCart" v-bind:disabled="numberOfItems === 0">
+      Checkout ({{ numberOfItems }})
     </button>
+
+    <div v-if="!displayCart">
+      <h2>{{ lesson.subject }}</h2>
+      <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
+      <p>Location: {{ lesson.location }}</p>
+      <p>Price: £{{ lesson.price }}</p>
+      <p>Spaces: {{ lesson.availability }}</p>
+
+      <button v-on:click="addToCart" v-bind:disabled="!canAddToCart">
+        Add to cart
+      </button>
+    </div>
+    <div v-else>
+      <h2>Checkout</h2>
+      <p>Placeholder checkout page</p>
+    </div>
   </div>
 
   <script>
@@ -34,17 +44,24 @@
           availability: 5,
           icon: 'fa fa-calculator'
         },
-        cart: []
+        cart: [],
+        displayCart: false
       },
       methods: {
         addToCart: function () {
           this.cart.push(this.lesson.id);
           this.lesson.availability--;
+        },
+        toggleCart: function () {
+          this.displayCart = !this.displayCart;
         }
       },
       computed: {
         canAddToCart: function () {
           return this.lesson.availability > 0;
+        },
+        numberOfItems: function () {
+          return this.cart.length;
         }
       }
     });
