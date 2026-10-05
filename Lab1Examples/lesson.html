@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>After School Lesson</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+  .lesson-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 20px;
+    max-width: 320px;
+    text-align: center;
+  }
+  .lesson-card img {
+    width: 100%;
+    max-width: 250px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .lesson-card h2 { margin: 12px 0 4px; }
+  .lesson-card p { margin: 4px 0; color: #333; }
+  .price { font-weight: bold; color: #2a7d2a; font-size: 1.2em; }
+</style>
+</head>
+<body>
+
+  <div id="app">
+    <div class="lesson-card">
+      <img :src="image" :alt="imageAlt">
+      <h2>{{ subject }}</h2>
+      <p>📍 {{ location }}</p>
+      <p class="price">£{{ price }}</p>
+    </div>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          subject: "Computer Science",
+          location: "Hendon",
+          price: 25,
+          image: "images copy/computer science copy.jpg",
+          imageAlt: "Students working on laptops in a Computer Science lesson"
+        };
+      }
+    });
+
+    app.mount('#app');
+  </script>
+
+</body>
+</html>
