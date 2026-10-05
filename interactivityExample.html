@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactivity Example</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <p>
+      <!-- Just a quick greeting with the person's name and inbox counts. -->
+      Good morning, {{ fullname }}.<br>
+      You have {{ unreadEmails }} unread Emails and {{ totalEmails }} emails in total.
+    </p>
+
+    <!-- This one lets you mark an email as read. -->
+    <button v-on:click="readEmail" v-bind:disabled="!canReadEmail">Read an email</button>
+    <button v-on:click="getNewEmail" v-bind:disabled="false">Get more email</button>
+  </div>
+
+  <script>
+    // Small Vue setup for the email counter example.
+    var app = new Vue({
+      el: '#app',
+      data: {
+        // These are the simple name and email values for the page.
+        firstName: 'Mark',
+        lastName: 'Jones',
+        unreadEmails: 5,
+        readEmails: 10
+      },
+      methods: {
+        // Move one email from unread over to read.
+        readEmail: function () {
+          this.unreadEmails--;
+          this.readEmails++;
+        },
+        // Add a few new emails as if they just came in.
+        getNewEmail: function () {
+          this.unreadEmails += 5;
+        }
+      },
+      computed: {
+        // Join the first and last name for the greeting.
+        fullname: function () {
+          return this.firstName + ' ' + this.lastName;
+        },
+        // Total emails is just the read and unread ones added together.
+        totalEmails: function () {
+          return this.readEmails + this.unreadEmails;
+        },
+        // Don't let the button work if there are no unread emails left.
+        canReadEmail: function () {
+          return this.unreadEmails > 0;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

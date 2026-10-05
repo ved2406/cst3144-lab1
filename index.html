@@ -11,10 +11,12 @@
   <div id="app">
     <h1>Lesson Shop</h1>
 
+    <!-- This button takes you over to checkout whenever you want to see what you've added. -->
     <button v-on:click="toggleCart" v-bind:disabled="numberOfItems === 0">
       Checkout ({{ numberOfItems }})
     </button>
 
+    <!-- Keep showing the lesson details here until the checkout view gets opened. -->
     <div v-if="!displayCart">
       <h2>{{ lesson.subject }}</h2>
       <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
@@ -26,6 +28,7 @@
         Add to cart
       </button>
     </div>
+    <!-- This is only a basic checkout screen for now, just so the page has something to show. -->
     <div v-else>
       <h2>Checkout</h2>
       <p>Placeholder checkout page</p>
@@ -33,9 +36,11 @@
   </div>
 
   <script>
+    // This little Vue app handles the lesson details and keeps track of the cart.
     var app = new Vue({
       el: '#app',
       data: {
+        // This is the lesson currently being shown on the page.
         lesson: {
           id: 1001,
           subject: 'Maths',
@@ -44,22 +49,27 @@
           availability: 5,
           icon: 'fa fa-calculator'
         },
+        // Keeps track of the items that get added to the cart.
         cart: [],
         displayCart: false
       },
       methods: {
+        // Add the lesson to the cart and reduce the number of spaces left.
         addToCart: function () {
           this.cart.push(this.lesson.id);
           this.lesson.availability--;
         },
+        // Switch between the lesson screen and the checkout screen.
         toggleCart: function () {
           this.displayCart = !this.displayCart;
         }
       },
       computed: {
+        // Once there are no spaces left, the add button should stop working.
         canAddToCart: function () {
           return this.lesson.availability > 0;
         },
+        // This is the number that shows up on the checkout button.
         numberOfItems: function () {
           return this.cart.length;
         }
