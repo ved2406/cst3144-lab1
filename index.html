@@ -77,10 +77,10 @@
         // Fetch the lessons array (as JSON) from the back-end.
         // IMPORTANT: use the same port your server.js listens on (3000 or 3001).
         fetchData: async function () {
-          var url = "http://localhost:3001/";
-          var response = await fetch(url);
-          this.lessons = await response.json();
-        },
+  var url = "http://localhost:3001/lessons";
+  var response = await fetch(url);
+  this.lessons = await response.json();
+},
         // Add one copy of the lesson id to the cart and reduce its spaces.
         addToCart: function (lesson) {
           this.cart.push(lesson.id);
