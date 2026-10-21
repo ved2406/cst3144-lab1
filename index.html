@@ -11,41 +11,125 @@
   <div id="app">
     <h1>Lesson Shop</h1>
 
-    <h2>{{ lesson.subject }}</h2>
-    <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
-    <p>Location: {{ lesson.location }}</p>
-    <p>Price: £{{ lesson.price }}</p>
-    <p>Spaces: {{ lesson.availability }}</p>
-
-    <button v-on:click="addToCart" v-bind:disabled="!canAddToCart">
-      Add to cart
+    <!-- Cart button: always visible, only enabled once something is in the cart. -->
+    <button v-on:click="toggleCart" v-bind:disabled="numberOfItems === 0">
+      Checkout ({{ numberOfItems }})
     </button>
+
+    <!-- Shown after a successful order. -->
+    <p v-if="message">{{ message }}</p>
+
+    <!-- LESSONS PAGE: v-for repeats this block once per lesson. -->
+    <div v-if="!displayCart">
+      <div v-for="lesson in lessons" v-bind:key="lesson.id">
+        <h2>{{ lesson.subject }}</h2>
+        <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
+        <p>Location: {{ lesson.location }}</p>
+        <p>Price: £{{ lesson.price }}</p>
+        <p>Spaces: {{ lesson.availability }}</p>
+
+        <button v-on:click="addToCart(lesson)" v-bind:disabled="!canAddToCart(lesson)">
+          Add to cart
+        </button>
+        <hr>
+      </div>
+    </div>
+
+    <!-- CART + CHECKOUT PAGE -->
+    <div v-else>
+      <h2>Your Cart</h2>
+
+      <!-- One row per lesson, hidden if there are 0 copies in the cart. -->
+      <template v-for="lesson in lessons">
+        <div v-if="cartCount(lesson.id) > 0" v-bind:key="lesson.id">
+          {{ lesson.subject }} x {{ cartCount(lesson.id) }}
+          <button v-on:click="removeFromCart(lesson)">Remove</button>
+        </div>
+      </template>
+
+      <h2>Checkout</h2>
+      <p>Name: <input v-model="order.name"></p>
+      <p>Phone: <input v-model="order.phone"></p>
+
+      <button v-on:click="checkout" v-bind:disabled="!canCheckout">
+        Checkout
+      </button>
+    </div>
   </div>
 
   <script>
     var app = new Vue({
       el: '#app',
       data: {
-        lesson: {
-          id: 1001,
-          subject: 'Maths',
-          location: 'London',
-          price: 20,
-          availability: 5,
-          icon: 'fa fa-calculator'
+        // Empty at first: the lessons are fetched from the back-end server.
+        lessons: [],
+        // Stores lesson IDs, e.g. [1001, 1001, 1003]
+        cart: [],
+        displayCart: false,
+        // Customer details, blank by default.
+        order: {
+          name: '',
+          phone: ''
         },
-        cart: []
+        message: ''
       },
       methods: {
-        addToCart: function () {
-          this.cart.push(this.lesson.id);
-          this.lesson.availability--;
+        // Fetch the lessons array (as JSON) from the back-end.
+        // IMPORTANT: use the same port your server.js listens on (3000 or 3001).
+        fetchData: async function () {
+          var url = "http://localhost:3001/";
+          var response = await fetch(url);
+          this.lessons = await response.json();
+        },
+        // Add one copy of the lesson id to the cart and reduce its spaces.
+        addToCart: function (lesson) {
+          this.cart.push(lesson.id);
+          lesson.availability--;
+          this.message = '';
+        },
+        // A method (not computed) because it needs a lesson as input.
+        canAddToCart: function (lesson) {
+          return lesson.availability > 0;
+        },
+        toggleCart: function () {
+          this.displayCart = !this.displayCart;
+        },
+        // How many copies of this lesson id are in the cart.
+        cartCount: function (id) {
+          return this.cart.filter(function (x) { return x === id; }).length;
+        },
+        // Remove ONE copy and give the space back.
+        removeFromCart: function (lesson) {
+          var i = this.cart.indexOf(lesson.id);
+          if (i > -1) {
+            this.cart.splice(i, 1);
+            lesson.availability++;
+          }
+          // Cart button gets disabled when empty, so go back to lessons.
+          if (this.cart.length === 0) {
+            this.displayCart = false;
+          }
+        },
+        checkout: function () {
+          this.message = 'Order confirmed! Thank you, ' + this.order.name + '.';
+          this.cart = [];
+          this.order.name = '';
+          this.order.phone = '';
+          this.displayCart = false;
         }
       },
       computed: {
-        canAddToCart: function () {
-          return this.lesson.availability > 0;
+        numberOfItems: function () {
+          return this.cart.length;
+        },
+        // Enabled only when both fields have something in them.
+        canCheckout: function () {
+          return this.order.name.trim() !== '' && this.order.phone.trim() !== '';
         }
+      },
+      // Runs automatically when the Vue instance is created.
+      created: function () {
+        this.fetchData();
       }
     });
   </script>
