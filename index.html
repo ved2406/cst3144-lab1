@@ -67,7 +67,7 @@
       },
       methods: {
         fetchData: async function () {
-          var url = "http://localhost:3001/lessons";
+          var url = "https://m01026435-server-backend.onrender.com/lessons";
           var response = await fetch(url);
           this.lessons = await response.json();
         },
