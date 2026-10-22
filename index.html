@@ -20,7 +20,8 @@
     <div v-if="!displayCart">
       <div v-for="lesson in lessons" v-bind:key="lesson.id">
         <h2>{{ lesson.subject }}</h2>
-        <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
+        <img v-bind:src="'http://localhost:3001/images/' + lesson.image"
+     v-bind:alt="lesson.subject" width="150">
         <p>Location: {{ lesson.location }}</p>
         <p>Price: £{{ lesson.price }}</p>
         <p>Spaces: {{ lesson.availability }}</p>
