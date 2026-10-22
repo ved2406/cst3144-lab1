@@ -17,8 +17,21 @@
 
     <p v-if="message">{{ message }}</p>
 
-    <div v-if="!displayCart">
-      <div v-for="lesson in lessons" v-bind:key="lesson.id">
+        <div v-if="!displayCart">
+      <p>
+        Sort by:
+        <select v-model="sortType">
+          <option value="price">Price</option>
+          <option value="availability">Availability</option>
+          <option value="location">Location</option>
+          <option value="subject">Subject</option>
+        </select>
+
+        <label><input type="radio" v-model="sortAscending" v-bind:value="true"> Ascending</label>
+        <label><input type="radio" v-model="sortAscending" v-bind:value="false"> Descending</label>
+      </p>
+
+      <div v-for="lesson in sortedLessons" v-bind:key="lesson.id">
         <h2>{{ lesson.subject }}</h2>
         <img v-bind:src="'http://localhost:3001/images/' + lesson.image"
      v-bind:alt="lesson.subject" width="150">
@@ -64,7 +77,9 @@
           name: '',
           phone: ''
         },
-        message: ''
+                message: '',
+        sortType: 'price',
+        sortAscending: true
       },
       methods: {
         fetchData: async function () {
@@ -128,8 +143,20 @@
         numberOfItems: function () {
           return this.cart.length;
         },
-        canCheckout: function () {
+                canCheckout: function () {
           return this.order.name.trim() !== '' && this.order.phone.trim() !== '';
+        },
+        sortedLessons: function () {
+          var type = this.sortType;
+          var direction = this.sortAscending ? 1 : -1;
+          return this.lessons.slice().sort(function (a, b) {
+            var x = a[type];
+            var y = b[type];
+            if (typeof x === 'string') {
+              return x.localeCompare(y) * direction;
+            }
+            return (x - y) * direction;
+          });
         }
       },
       created: function () {
