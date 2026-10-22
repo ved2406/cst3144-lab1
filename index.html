@@ -96,12 +96,32 @@
             this.displayCart = false;
           }
         },
-        checkout: function () {
-          this.message = 'Order confirmed! Thank you, ' + this.order.name + '.';
-          this.cart = [];
-          this.order.name = '';
-          this.order.phone = '';
-          this.displayCart = false;
+                checkout: async function () {
+          var newOrder = {
+            name: this.order.name,
+            phone: this.order.phone,
+            lessonIDs: this.cart
+          };
+
+          try {
+            var response = await fetch("http://localhost:3001/orders", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(newOrder)
+            });
+
+            if (response.ok) {
+              this.message = 'Order confirmed! Thank you, ' + this.order.name + '.';
+              this.cart = [];
+              this.order.name = '';
+              this.order.phone = '';
+              this.displayCart = false;
+            } else {
+              this.message = 'Sorry, the order could not be submitted.';
+            }
+          } catch (error) {
+            this.message = 'Could not reach the server. Is it running?';
+          }
         }
       },
       computed: {
