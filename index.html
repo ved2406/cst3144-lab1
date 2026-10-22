@@ -11,19 +11,17 @@
   <div id="app">
     <h1>Lesson Shop</h1>
 
-    <!-- Cart button: always visible, only enabled once something is in the cart. -->
     <button v-on:click="toggleCart" v-bind:disabled="numberOfItems === 0">
       Checkout ({{ numberOfItems }})
     </button>
 
-    <!-- Shown after a successful order. -->
     <p v-if="message">{{ message }}</p>
 
-    <!-- LESSONS PAGE: v-for repeats this block once per lesson. -->
     <div v-if="!displayCart">
       <div v-for="lesson in lessons" v-bind:key="lesson.id">
         <h2>{{ lesson.subject }}</h2>
-        <i v-bind:class="lesson.icon" style="font-size: 48px;"></i>
+        <img v-bind:src="'http://localhost:3001/images/' + lesson.image"
+     v-bind:alt="lesson.subject" width="150">
         <p>Location: {{ lesson.location }}</p>
         <p>Price: £{{ lesson.price }}</p>
         <p>Spaces: {{ lesson.availability }}</p>
@@ -35,11 +33,9 @@
       </div>
     </div>
 
-    <!-- CART + CHECKOUT PAGE -->
     <div v-else>
       <h2>Your Cart</h2>
 
-      <!-- One row per lesson, hidden if there are 0 copies in the cart. -->
       <template v-for="lesson in lessons">
         <div v-if="cartCount(lesson.id) > 0" v-bind:key="lesson.id">
           {{ lesson.subject }} x {{ cartCount(lesson.id) }}
@@ -61,12 +57,9 @@
     var app = new Vue({
       el: '#app',
       data: {
-        // Empty at first: the lessons are fetched from the back-end server.
         lessons: [],
-        // Stores lesson IDs, e.g. [1001, 1001, 1003]
         cart: [],
         displayCart: false,
-        // Customer details, blank by default.
         order: {
           name: '',
           phone: ''
@@ -74,38 +67,31 @@
         message: ''
       },
       methods: {
-        // Fetch the lessons array (as JSON) from the back-end.
-        // IMPORTANT: use the same port your server.js listens on (3000 or 3001).
         fetchData: async function () {
-  var url = "http://localhost:3001/lessons";
-  var response = await fetch(url);
-  this.lessons = await response.json();
-},
-        // Add one copy of the lesson id to the cart and reduce its spaces.
+         var url = "http://localhost:3001/lessons";
+          var response = await fetch(url);
+          this.lessons = await response.json();
+        },
         addToCart: function (lesson) {
           this.cart.push(lesson.id);
           lesson.availability--;
           this.message = '';
         },
-        // A method (not computed) because it needs a lesson as input.
         canAddToCart: function (lesson) {
           return lesson.availability > 0;
         },
         toggleCart: function () {
           this.displayCart = !this.displayCart;
         },
-        // How many copies of this lesson id are in the cart.
         cartCount: function (id) {
           return this.cart.filter(function (x) { return x === id; }).length;
         },
-        // Remove ONE copy and give the space back.
         removeFromCart: function (lesson) {
           var i = this.cart.indexOf(lesson.id);
           if (i > -1) {
             this.cart.splice(i, 1);
             lesson.availability++;
           }
-          // Cart button gets disabled when empty, so go back to lessons.
           if (this.cart.length === 0) {
             this.displayCart = false;
           }
@@ -122,12 +108,10 @@
         numberOfItems: function () {
           return this.cart.length;
         },
-        // Enabled only when both fields have something in them.
         canCheckout: function () {
           return this.order.name.trim() !== '' && this.order.phone.trim() !== '';
         }
       },
-      // Runs automatically when the Vue instance is created.
       created: function () {
         this.fetchData();
       }

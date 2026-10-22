@@ -35,34 +35,29 @@
 <body>
 
   <div id="app">
-  <div class="lesson-card" v-for="lesson in lessons" :key="lesson.id">
-    <h2>{{ lesson.subject }}</h2>
-    <p>📍 {{ lesson.location }}</p>
-    <p class="price">£{{ lesson.price }}</p>
-    <p>Spaces: {{ lesson.spaces }}</p>
+    <div class="lesson-card">
+      <img :src="image" :alt="imageAlt">
+      <h2>{{ subject }}</h2>
+      <p>📍 {{ location }}</p>
+      <p class="price">£{{ price }}</p>
+    </div>
   </div>
-</div>
 
   <script>
-  const app = Vue.createApp({
-    data() {
-      return {
-        lessons: []
-      };
-    },
-    methods: {
-      async fetchData() {
-        const url = "http://localhost:3001/";
-        let response = await fetch(url);
-        this.lessons = await response.json();
+    const app = Vue.createApp({
+      data() {
+        return {
+          subject: "Computer Science",
+          location: "Hendon",
+          price: 25,
+          image: "images copy/computer science copy.jpg",
+          imageAlt: "Students working on laptops in a Computer Science lesson"
+        };
       }
-    },
-    created() {
-      this.fetchData();
-    }
-  });
-  app.mount("#app");
-</script>
+    });
+
+    app.mount('#app');
+  </script>
 
 </body>
 </html>
